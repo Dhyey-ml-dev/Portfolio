@@ -61,6 +61,10 @@
    *.log
    ```
 
+### Single environment file (root-level .env)
+- Copy `.env.example` in the repo root to `.env` and fill values once; all services (frontend, backend, chatbot) read from it.
+- Keep `server/.env.example` and `chatbot/.env.example` only if your host needs per-service files; otherwise leave them unused.
+
 9. **Create `.env.example` files (without secrets):**
 
    **`chatbot/.env.example`** (already created):

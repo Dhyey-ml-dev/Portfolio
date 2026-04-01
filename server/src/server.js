@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import { connectDB } from './config/db.js';
@@ -17,13 +18,18 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import chatbotRoutes from './routes/chatbotRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 
-dotenv.config();
+const envPath = path.resolve(__dirname, '../../.env');
+if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+} else {
+  dotenv.config();
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -88,7 +94,8 @@ async function seedDefaults() {
 }
 
 async function start() {
-  const dbConnected = await connectDB(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/portfolio');
+  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/portfolio';
+  const dbConnected = await connectDB(mongoUri);
   
   if (dbConnected) {
     try {

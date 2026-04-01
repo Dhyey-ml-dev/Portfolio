@@ -9,7 +9,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from datetime import datetime
+from pathlib import Path
+from dotenv import load_dotenv
 import google.generativeai as genai
+
+env_path = Path(__file__).resolve().parents[1] / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
+else:
+    load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -210,6 +218,6 @@ def index():
     }), 200
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 8000))
+    port = int(os.getenv('CHATBOT_PORT') or os.getenv('PORT', 8000))
     debug = os.getenv('DEBUG', 'False') == 'True'
     app.run(host='0.0.0.0', port=port, debug=debug)

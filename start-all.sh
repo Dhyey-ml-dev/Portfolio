@@ -35,6 +35,9 @@ sleep 2
 echo "🟢 Terminal 3: Starting React Frontend (port 5173)..."
 open -a Terminal <<EOF
 cd /Users/dhyey/Desktop/Portfolio/client
+set -a
+[ -f ../.env ] && source ../.env
+set +a
 npx vite --host
 EOF
 
