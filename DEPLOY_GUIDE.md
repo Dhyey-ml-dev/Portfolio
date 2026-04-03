@@ -73,6 +73,130 @@ ADMIN_PASSWORD=password123
 CHATBOT_URL=https://<your-chatbot-render-url>/chat
 ```
 
+⚠️ **DETAILED EXPLANATION OF EACH VARIABLE:**
+
+#### `BACKEND_PORT=5001`
+- **What it is:** The port your Express server runs on
+- **What to write:** `5001` (don't change this)
+- **Why:** This is the port your frontend will connect to
+- **Example:** `BACKEND_PORT=5001`
+
+#### `NODE_ENV=production`
+- **What it is:** Tells Node.js to run in production mode (optimized, no debug logs)
+- **What to write:** `production` (exactly this word)
+- **Why:** Render expects this for deployment
+- **Example:** `NODE_ENV=production`
+
+#### `MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/portfolio`
+- **What it is:** Connection string to your MongoDB database
+- **Where to get it:** MongoDB Atlas (free tier): https://www.mongodb.com/cloud/atlas
+- **Step-by-step:**
+  1. Go to MongoDB Atlas
+  2. Sign up or login
+  3. Create new cluster (choose FREE tier)
+  4. Wait for cluster to be created (~5 min)
+  5. Click "Connect" button
+  6. Choose "Drivers" → "Node.js"
+  7. Copy connection string
+  8. Replace `<password>` with your MongoDB password
+  9. Replace `<dbname>` with `portfolio`
+- **Full Example:** 
+  ```
+  mongodb+srv://dhyey:MyPassword123@cluster0.abc123.mongodb.net/portfolio?retryWrites=true&w=majority
+  ```
+- **⚠️ Important:** 
+  - Keep username/password secret!
+  - Add Render's IP to MongoDB whitelist: In MongoDB Atlas → Network Access → Add IP → "Allow access from anywhere" (0.0.0.0/0)
+
+#### `JWT_SECRET=your-super-secret-key-change-me`
+- **What it is:** Secret key for user authentication tokens
+- **What to write:** Any random string (at least 32 characters long)
+- **How to generate:** Use any random string generator or:
+  ```bash
+  # On your Mac terminal:
+  openssl rand -base64 32
+  # This will output something like: aBc123XyZ+/==
+  ```
+- **Example:** `JWT_SECRET=MySecureKey12345RandomString67890`
+- **⚠️ Important:** 
+  - Keep it secret!
+  - Don't share it!
+  - Use something complex (mix uppercase, lowercase, numbers, symbols)
+
+#### `ADMIN_EMAIL=admin@example.com`
+- **What it is:** Email for admin login panel
+- **What to write:** Your email or fake email for testing
+- **Example:** 
+  - `ADMIN_EMAIL=admin@example.com` (for testing)
+  - `ADMIN_EMAIL=your-email@gmail.com` (your real email)
+- **Why:** You'll use this to login to the admin panel
+
+#### `ADMIN_PASSWORD=password123`
+- **What it is:** Password for admin login panel
+- **What to write:** Any password you want (change from default!)
+- **Example:** 
+  - `ADMIN_PASSWORD=SecurePassword@123` (strong password)
+  - `ADMIN_PASSWORD=password123` (for testing, not secure)
+- **⚠️ Important:** 
+  - Change this from default!
+  - Use strong password for production
+
+#### `CHATBOT_URL=https://<your-chatbot-render-url>/chat`
+- **What it is:** URL where your chatbot is deployed
+- **What to write:** Leave as-is for now, update AFTER deploying chatbot
+- **Step-by-step:**
+  1. First, deploy backend without this URL set
+  2. Then, go to Step 3 and deploy chatbot
+  3. You'll get chatbot URL like: `https://portfolio-chatbot-xxxx.onrender.com`
+  4. Come back to backend settings
+  5. Replace `<your-chatbot-render-url>` with actual URL
+  6. **Final:** `CHATBOT_URL=https://portfolio-chatbot-xxxx.onrender.com/chat`
+- **Example:** `CHATBOT_URL=https://portfolio-chatbot-abc123.onrender.com/chat`
+
+---
+
+#### 🎯 QUICK REFERENCE TABLE
+
+| Variable | Example Value | Where to Write |
+|----------|---------------|-----------------|
+| `BACKEND_PORT` | `5001` | Render → Environment |
+| `NODE_ENV` | `production` | Render → Environment |
+| `MONGO_URI` | `mongodb+srv://user:pass@cluster.abc.mongodb.net/portfolio` | Render → Environment |
+| `JWT_SECRET` | `MySecureRandomKey123!@#` | Render → Environment |
+| `ADMIN_EMAIL` | `admin@example.com` | Render → Environment |
+| `ADMIN_PASSWORD` | `SecurePass@123` | Render → Environment |
+| `CHATBOT_URL` | `https://portfolio-chatbot-xxxx.onrender.com/chat` | Render → Environment (after step 3) |
+
+---
+
+#### HOW TO ADD THESE IN RENDER DASHBOARD
+
+1. Create backend service (see Step 2.2)
+2. Fill Name, Root Directory, Environment, etc.
+3. Scroll down to **"Environment"** section
+4. Click **"Add Environment Variable"**
+5. Enter first variable name: `BACKEND_PORT`
+6. Enter value: `5001`
+7. Click **"Add Environment Variable"** again
+8. Enter next variable: `NODE_ENV`
+9. Enter value: `production`
+10. Repeat for ALL variables
+11. Scroll down and click **"Create Web Service"**
+
+**It will look like:**
+```
+Environment Variables:
+┌─────────────────────────────────────────┐
+│ KEY: BACKEND_PORT  VALUE: 5001         │
+│ KEY: NODE_ENV      VALUE: production    │
+│ KEY: MONGO_URI     VALUE: mongodb+srv...│
+│ KEY: JWT_SECRET    VALUE: MySecureKey...│
+│ KEY: ADMIN_EMAIL   VALUE: admin@exam...│
+│ KEY: ADMIN_PASSWORD VALUE: SecurePass..│
+│ KEY: CHATBOT_URL   VALUE: https://...  │
+└─────────────────────────────────────────┘
+```
+
 ⚠️ **MongoDB Setup:**
 - Use MongoDB Atlas (free tier): https://www.mongodb.com/cloud/atlas
 - Create cluster, get connection string
