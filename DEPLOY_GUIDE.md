@@ -7,8 +7,9 @@
 4. [Step 3: Deploy Chatbot to Render/Railway](#step-3-deploy-chatbot-to-renderrailway)
 5. [Step 4: Deploy Frontend to Vercel (GitHub Pages Alternative)](#step-4-deploy-frontend-to-vercel-github-pages-alternative)
 6. [Step 5: Connect Everything Together](#step-5-connect-everything-together)
-7. [Step 6: Custom Domain (.dev/.me)](#step-6-custom-domain-devme)
-8. [Testing & Troubleshooting](#testing--troubleshooting)
+7. [Step 6: Custom Domain (.dev/.me) - FREE via GitHub Student Pack](#step-6-custom-domain-devme---free-via-github-student-pack)
+8. [Appendix A: Render Runtime Selection Guide](#appendix-a-render-runtime-selection-guide)
+9. [Testing & Troubleshooting](#testing--troubleshooting)
 
 ---
 
@@ -30,7 +31,7 @@ cd /Users/dhyey/Desktop/Portfolio
 git status  # Should show "On branch main, nothing to commit"
 ```
 
-✅ Your repo is at: https://github.com/Dhyey-ml-dev/Portfolio
+✅ Your repo is at: https://github.c@om/Dhyey-ml-dev/Portfolio
 
 ---
 
@@ -322,13 +323,59 @@ Commit and push this change → services auto-redeploy.
 
 ---
 
-## Step 6: Custom Domain (.dev/.me)
+## Step 6: Custom Domain (.dev/.me) - FREE via GitHub Student Pack
 
-### 6.1 Buy Domain
+### 6.1 Get FREE .dev or .me Domain (Students Only)
 
-- Namecheap, GoDaddy, or Cloudflare
-- Pick: `yourname.dev` or `yourname.me`
-- Cost: ~$10-15/year
+If you have a GitHub Student ID, you can get a free `.dev` or `.me` domain for 1 year through GitHub Education!
+
+#### 6.1a: Verify GitHub Student Status
+
+1. Go to: https://education.github.com
+2. Click "Join GitHub Classroom" or "Get Student Benefits"
+3. Sign in with your GitHub account
+4. Verify with your school email (`.edu` or institutional email)
+5. Wait for approval (usually instant, sometimes 24 hours)
+
+**Check status:**
+- Go to https://github.com/settings/education
+- Should show "GitHub Pro" and "Student" badge
+
+#### 6.1b: Get Free Domain from GitHub Student Pack
+
+1. Go to: https://education.github.com/pack
+2. Scroll down to find domain offers:
+   - **Namecheap:** Free `.me` domain for 1 year + $50 credit
+   - **Get.tech:** Free `.tech` domain
+   - **Codecademy:** Free domain with Codecademy courses
+
+**Using Namecheap (easiest for .dev/.me):**
+
+1. In GitHub Student Pack page, find "Namecheap" → Click "Get offer"
+2. You'll get a redemption link and coupon code
+3. Go to https://namecheap.com and sign up
+4. Search for your desired domain:
+   - `yourname.me` (usually FREE with coupon)
+   - `yourname.dev` (might need $50 credit)
+5. Add to cart and apply the coupon code from GitHub
+6. Checkout (should be $0 or use credit)
+7. Complete domain registration
+
+**Domain options:**
+- `.me` → Personal brand, 1 year free
+- `.dev` → Requires $50 credit but looks more professional
+- Choose based on what's available with your student credit
+
+**Pro tip:** 
+- Free domain for 1 year
+- After 1 year, auto-renews at regular price (~$8-12/year) unless you cancel
+- Keep your billing method updated if you want to keep it
+
+#### 6.1c: After Getting Domain
+
+Once registered, note your domain (e.g., `dhyey.me` or `dhyey.dev`).
+
+You'll use this in the next sections.
 
 ### 6.2 Point to Frontend (Vercel)
 
@@ -368,9 +415,228 @@ VITE_API_URL=https://api.yourname.dev/api
 
 ---
 
+## Appendix A: Render Runtime Selection Guide
+
+When creating a new Web Service on Render, you'll see a prompt asking for "Environment". Here's the detailed breakdown for which one to choose.
+
+### A.1 Backend (Node.js Service)
+
+**What Render asks:**
+```
+Select Runtime/Environment:
+
+⭕ Docker
+⭕ Node
+⭕ Static Site
+⭕ Python
+⭕ Go
+⭕ Rust
+```
+
+**Your backend (`server/`) uses Node.js, so SELECT: `Node`**
+
+**Full Backend Configuration:**
+
+```
+Name:                  portfolio-backend
+Root Directory:        server
+Environment:           Node ← SELECT THIS
+Build Command:         npm install
+Start Command:         npm start
+                       (or: node src/server.js)
+Region:                Choose closest to you
+Plan:                  Free (for testing)
+```
+
+**Why Node and not Docker?**
+- ✅ Node is simpler and faster to deploy
+- ✅ No need to write Dockerfile for standard Node apps
+- ✅ Render auto-detects `package.json` and handles everything
+- ✅ Docker adds unnecessary complexity for standard apps
+- ✅ Builds 5x faster with Node runtime
+
+**When to use Docker?**
+- ❌ Only if you have a custom `Dockerfile` in your repo
+- ❌ Only if you need custom system dependencies
+- ❌ Only if you're running complex multi-container setup
+- For this project: **DO NOT USE DOCKER**
+
+---
+
+### A.2 Chatbot (Python Service)
+
+**Your chatbot (`chatbot/`) uses Python with Flask, so SELECT: `Python 3`**
+
+**Full Chatbot Configuration:**
+
+```
+Name:                  portfolio-chatbot
+Root Directory:        chatbot
+Environment:           Python 3 ← SELECT THIS
+Build Command:         pip install -r requirements.txt
+Start Command:         gunicorn app:app --bind 0.0.0.0:$PORT
+Region:                Same as backend (for lower latency)
+Plan:                  Free (for testing)
+```
+
+**Why Python 3 and not Docker?**
+- ✅ Python 3 is the standard for Flask apps
+- ✅ Render auto-detects `requirements.txt`
+- ✅ Faster deployment than Docker
+- ✅ Gunicorn handles production workloads properly
+
+**Important: Use Gunicorn, not Flask dev server**
+
+❌ WRONG (will crash in production):
+```bash
+python app.py
+flask run
+```
+
+✅ CORRECT (production-ready):
+```bash
+gunicorn app:app --bind 0.0.0.0:$PORT
+```
+
+**Gunicorn explanation:**
+- `app:app` → tells Gunicorn where your Flask app is (`app.py` file, `app` object)
+- `--bind 0.0.0.0:$PORT` → binds to all interfaces on the port Render assigns
+- `$PORT` → Render automatically sets this environment variable
+
+---
+
+### A.3 Frontend (Vercel or GitHub Pages)
+
+For frontend, you use **Vercel or GitHub Pages**, NOT Render:
+
+- **Vercel:** Recommended - auto-detects Vite, instant deployments
+- **GitHub Pages:** Free alternative - use GitHub Actions
+
+**DO NOT deploy frontend to Render.** It's slower and more expensive.
+
+If you absolutely must, use:
+```
+Environment:           Node
+Build Command:         npm run build
+Start Command:         npm run preview
+```
+
+But **Vercel is better for frontend.**
+
+---
+
+### A.4 Complete Runtime Selection Cheat Sheet
+
+| Service | Directory | Render Environment | Build Command | Start Command |
+|---------|-----------|-------------------|----------------|----------------|
+| **Backend** | `server/` | **Node** | `npm install` | `npm start` |
+| **Chatbot** | `chatbot/` | **Python 3** | `pip install -r requirements.txt` | `gunicorn app:app --bind 0.0.0.0:$PORT` |
+| **Frontend** | `client/` | **Use Vercel** | `npm run build` | (N/A - Vercel handles it) |
+
+---
+
+### A.5 Common Render Configuration Mistakes
+
+| Mistake | What Happens | Fix |
+|---------|--------------|-----|
+| Select "Docker" for Node backend | Build fails or very slow (15+ min) | Select "Node" instead |
+| Use `python app.py` as start command for chatbot | App starts but crashes under load | Use `gunicorn app:app --bind 0.0.0.0:$PORT` |
+| Wrong root directory (e.g., `Portfolio/server` instead of `server`) | Build fails: "package.json not found" | Use exact directory: `server` or `chatbot` |
+| Missing environment variables | Services crash silently or with vague errors | Add all vars in Render Dashboard → Environment |
+| Missing `requirements.txt` or `package.json` | Build fails completely | Verify files exist in root of service directory |
+| Forgot to set `GEMINI_API_KEY` for chatbot | Chatbot responds with errors | Add key in Render Environment section |
+| Using `$PORT` wrong in start command | App doesn't bind to Render's assigned port | Use: `--bind 0.0.0.0:$PORT` (Render sets this) |
+
+---
+
+### A.6 Step-by-Step: Creating Backend Service on Render
+
+**When you click "New +" → "Web Service":**
+
+```
+1. ✅ Connect GitHub repo → Select Dhyey-ml-dev/Portfolio
+   
+2. ✅ Enter Name: portfolio-backend
+
+3. ✅ Choose Environment:
+   - See options: Docker, Node, Static Site, Python, Go, Rust
+   - CLICK: Node ← THIS ONE
+
+4. ✅ Root Directory: server
+
+5. ✅ Build Command: npm install
+
+6. ✅ Start Command: npm start
+
+7. ✅ Choose Region: Choose closest to you
+
+8. ✅ Select Plan: Free
+
+9. ✅ Click "Create Web Service"
+
+10. ✅ Wait 5-10 minutes for build
+
+11. ✅ You'll get URL: https://portfolio-backend-xxxx.onrender.com
+```
+
+---
+
+### A.7 Step-by-Step: Creating Chatbot Service on Render
+
+**When you click "New +" → "Web Service" (second time):**
+
+```
+1. ✅ Connect same GitHub repo
+
+2. ✅ Enter Name: portfolio-chatbot
+
+3. ✅ Choose Environment:
+   - CLICK: Python 3 ← THIS ONE
+
+4. ✅ Root Directory: chatbot
+
+5. ✅ Build Command: pip install -r requirements.txt
+
+6. ✅ Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+
+7. ✅ Choose Region: Same as backend (optional but good for latency)
+
+8. ✅ Select Plan: Free
+
+9. ✅ Click "Create Web Service"
+
+10. ✅ Wait 5-10 minutes for build
+
+11. ✅ You'll get URL: https://portfolio-chatbot-xxxx.onrender.com
+```
+
+---
+
 ## Testing & Troubleshooting
 
-### Test Frontend
+### T.1 Verify Services Are Running
+
+Check all three services are deployed and running:
+
+**Backend Health Check:**
+```
+Open: https://portfolio-backend-xxxx.onrender.com/api
+Should see: {"message": "Welcome to the Portfolio API!", ...}
+```
+
+**Chatbot Health Check:**
+```
+Open: https://portfolio-chatbot-xxxx.onrender.com/health
+Should see: {"status": "healthy", "service": "chatbot", ...}
+```
+
+**Frontend Check:**
+```
+Open: https://yourname.dev (or Vercel URL)
+Should load homepage immediately
+```
+
+### T.2 Test Frontend
 
 ```
 1. Open: https://yourname.dev (or Vercel URL)
@@ -378,7 +644,7 @@ VITE_API_URL=https://api.yourname.dev/api
 3. Check browser console for errors (F12 → Console)
 ```
 
-### Test Chatbot
+### T.3 Test Chatbot
 
 ```
 1. Open homepage
@@ -387,7 +653,7 @@ VITE_API_URL=https://api.yourname.dev/api
 4. Should get response from Gemini AI
 ```
 
-### Check Logs
+### T.4 Check Logs
 
 **Render Logs:**
 - Service dashboard → Logs tab
