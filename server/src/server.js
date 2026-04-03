@@ -6,6 +6,9 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import { connectDB } from './config/db.js';
 import User from './models/User.js';
 import Setting from './models/Setting.js';
@@ -24,9 +27,6 @@ if (fs.existsSync(envPath)) {
 } else {
   dotenv.config();
 }
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
