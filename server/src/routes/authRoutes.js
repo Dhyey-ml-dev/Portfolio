@@ -28,4 +28,23 @@ router.post('/login', [
   }
 });
 
+// Emergency admin seeder — protected by SEED_SECRET env variable
+router.post('/seed-admin', async (req, res) => {
+  const { secret } = req.body;
+  const expectedSecret = process.env.SEED_SECRET || 'seed-ds-techvibe-2024';
+  if (secret !== expectedSecret) return res.status(403).json({ message: 'Forbidden' });
+
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'password123';
+    await User.deleteOne({ email: adminEmail });
+    const newAdmin = new User({ email: adminEmail, password: adminPassword, name: 'Admin' });
+    await newAdmin.save();
+    return res.json({ message: `Admin user created: ${adminEmail}` });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to seed admin', error: err.message });
+  }
+});
+
 export default router;

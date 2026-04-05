@@ -20,6 +20,7 @@ import messageRoutes from './routes/messageRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import chatbotRoutes from './routes/chatbotRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import mongoose from 'mongoose';
 
 const envPath = path.resolve(__dirname, '../../.env');
 if (fs.existsSync(envPath)) {
@@ -36,7 +37,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -48,10 +49,12 @@ app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/contact', contactRoutes);
 
 app.get('/api', (req, res) => {
-  res.json({ message: 'Welcome to the Portfolio API!', status: 'Running' });
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Not Connected';
+  res.json({ message: 'Welcome to the Portfolio API!', status: 'Running', database: dbStatus });
 });
 
 app.get('/', (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Not Connected';
   res.json({ 
     status: 'ok', 
     message: 'Portfolio API running',
@@ -61,7 +64,7 @@ app.get('/', (req, res) => {
       contact: '/api/contact',
       login: '/api/auth/login'
     },
-    note: 'MongoDB not connected but API is ready',
+    database: dbStatus,
     frontend: 'http://localhost:5173'
   });
 });
@@ -94,7 +97,7 @@ async function seedDefaults() {
 }
 
 async function start() {
-  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/portfolio';
+  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
   const dbConnected = await connectDB(mongoUri);
   
   if (dbConnected) {

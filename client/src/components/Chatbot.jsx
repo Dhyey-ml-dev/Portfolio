@@ -27,7 +27,7 @@ const Chatbot = () => {
     setLoading(true);
     try {
       const apiBase = import.meta.env.VITE_API_URL || '';
-      const res = await axios.post(`${apiBase}/api/chatbot`, { message: input });
+      const res = await axios.post(`${apiBase}/chatbot`, { message: input });
       const reply = res?.data?.response || res?.data?.botResponse;
       setMessages((prev) => [...prev, { role: 'bot', text: reply || "I didn't catch that. Could you rephrase?" }]);
     } catch (err) {

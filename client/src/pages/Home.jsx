@@ -121,7 +121,7 @@ const ProjectCard = ({ project, index, onProjectClick }) => (
     >
       <div className="project-card__img" style={{ borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }}>
         {project.image ? (
-          <img src={`http://localhost:5001${project.image}`} alt={project.title} />
+          <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}${project.image}`} alt={project.title} />
         ) : (
           <div className="project-card__img-placeholder">
             <Sparkles size={40} strokeWidth={1.2} />
@@ -177,8 +177,9 @@ const Home = ({ settings }) => {
   };
 
   useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
     axios
-      .get('http://localhost:5001/api/projects')
+      .get(`${apiBase}/projects`)
       .then((r) => setProjects(r.data))
       .catch(() => {});
   }, []);
@@ -186,7 +187,8 @@ const Home = ({ settings }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/contact', form);
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      await axios.post(`${apiBase}/contact`, form);
       setFormStatus('success');
       setForm({ name: '', email: '', message: '' });
     } catch {
@@ -547,17 +549,17 @@ const Home = ({ settings }) => {
                   </div>
 
                   <div className="contact__info">
-                    <a
-                      href={`mailto:${settings?.contactInfo?.email || 'pavagadhidhyey2@gmail.com'}`}
-                      className="contact__email-link"
-                    >
-                      <div className="contact__email-icon">
-                        <Mail size={18} />
-                      </div>
-                      <span style={{ fontSize: '0.95rem' }}>
-                        {settings?.contactInfo?.email || 'pavagadhidhyey2@gmail.com'}
-                      </span>
-                    </a>
+                      <a
+                        href={`mailto:${settings?.contact?.email || 'pavagadhidhyey2@gmail.com'}`}
+                        className="contact__email-link"
+                      >
+                        <div className="contact__email-icon">
+                          <Mail size={18} />
+                        </div>
+                        <span style={{ fontSize: '0.95rem' }}>
+                          {settings?.contact?.email || 'pavagadhidhyey2@gmail.com'}
+                        </span>
+                      </a>
 
                     <motion.a
                       href="https://wa.me/919265783369"
@@ -642,7 +644,7 @@ const Home = ({ settings }) => {
             <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="footer__link" style={{ display: 'flex' }}>
               <Linkedin size={18} />
             </a>
-            <a href={`mailto:${settings?.contactInfo?.email || 'pavagadhidhyey2@gmail.com'}`} className="footer__link" style={{ display: 'flex' }}>
+            <a href={`mailto:${settings?.contact?.email || 'pavagadhidhyey2@gmail.com'}`} className="footer__link" style={{ display: 'flex' }}>
               <Mail size={18} />
             </a>
           </div>
@@ -693,7 +695,7 @@ const Home = ({ settings }) => {
               </h2>
               {selectedCaseStudy.image && (
                 <img 
-                  src={`http://localhost:5001${selectedCaseStudy.image}`} 
+                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}${selectedCaseStudy.image}`} 
                   alt={selectedCaseStudy.title}
                   style={{ width: '100%', height: '300px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1.5rem' }}
                 />

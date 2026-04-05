@@ -16,17 +16,18 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   const [settings, setSettings] = useState({
-    logo: '/logo.png',
-    about: '',
+    assets: { logo: '/logo.png', audio: '', audioEnabled: false },
+    about: { title: 'About', body: '' },
     services: [],
-    contactInfo: {}
+    contact: { email: 'pavagadhidhyey2@gmail.com', whatsapp: '' }
   });
 
   useEffect(() => {
-    // Fetch global settings (logo, etc)
+    // Fetch global settings
     const fetchSettings = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/api/upload/settings');
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+        const res = await axios.get(`${apiBase}/settings`);
         setSettings(res.data);
       } catch (err) {
         console.error("Error fetching settings:", err);
@@ -38,7 +39,7 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar logo={settings.logo} />
+        <Navbar logo={settings.assets.logo} />
         
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />

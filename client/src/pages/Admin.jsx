@@ -9,7 +9,7 @@ const Admin = ({ settings, setSettings }) => {
   const [projects, setProjects] = useState([]);
   const [messages, setMessages] = useState([]);
   const [newProject, setNewProject] = useState({ title: '', description: '', status: 'Completed', link: '' });
-  const [editingAbout, setEditingAbout] = useState(settings.about || '');
+  const [editingAbout, setEditingAbout] = useState(settings.about?.body || '');
   const [uploadStatus, setUploadStatus] = useState('');
   const navigate = useNavigate();
 
@@ -23,14 +23,16 @@ const Admin = ({ settings, setSettings }) => {
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/projects');
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      const res = await axios.get(`${apiBase}/projects`);
       setProjects(res.data);
     } catch (err) { console.error(err); }
   };
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/contact', { headers });
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      const res = await axios.get(`${apiBase}/contact`, { headers });
       setMessages(res.data);
     } catch (err) { console.error(err); }
   };
@@ -43,7 +45,8 @@ const Admin = ({ settings, setSettings }) => {
   const handleCreateProject = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/projects', newProject, { headers });
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      await axios.post(`${apiBase}/projects`, newProject, { headers });
       setNewProject({ title: '', description: '', status: 'Completed', link: '' });
       fetchProjects();
     } catch (err) { alert("Failed to add project"); }
@@ -52,7 +55,8 @@ const Admin = ({ settings, setSettings }) => {
   const handleDeleteProject = async (id) => {
     if (window.confirm("Delete this project?")) {
       try {
-        await axios.delete(`http://localhost:5001/api/projects/${id}`, { headers });
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+        await axios.delete(`${apiBase}/projects/${id}`, { headers });
         fetchProjects();
       } catch (err) { alert("Failed to delete project"); }
     }
@@ -67,10 +71,14 @@ const Admin = ({ settings, setSettings }) => {
 
     setUploadStatus(`Uploading ${type}...`);
     try {
-      const res = await axios.post(`http://localhost:5001/api/upload/${type}`, formData, { 
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      const res = await axios.post(`${apiBase}/upload/${type}`, formData, { 
         headers: { ...headers, 'Content-Type': 'multipart/form-data' } 
       });
-      setSettings(prev => ({ ...prev, [type]: res.data[type] }));
+      setSettings(prev => ({ 
+        ...prev, 
+        assets: { ...prev.assets, [type]: res.data.path } 
+      }));
       setUploadStatus(`${type} uploaded successfully!`);
       setTimeout(() => setUploadStatus(''), 3000);
     } catch (err) {
@@ -80,7 +88,8 @@ const Admin = ({ settings, setSettings }) => {
 
   const handleUpdateAbout = async () => {
     try {
-      const res = await axios.put('http://localhost:5001/api/upload/settings', { about: editingAbout }, { headers });
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      const res = await axios.put(`${apiBase}/settings`, { about: { ...settings.about, body: editingAbout } }, { headers });
       setSettings(res.data);
       alert("Changes saved successfully!");
     } catch (err) { alert("Failed to update about text"); }
@@ -277,7 +286,7 @@ const Admin = ({ settings, setSettings }) => {
                     <div style={{ padding: '2.5rem', border: '2px dashed var(--border-md)', borderRadius: '20px', textAlign: 'center' }}>
                         <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem' }}>Brand Logo</h3>
                         <div style={{ height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                          {settings.logo ? <img src={`http://localhost:5001${settings.logo}`} alt="Logo" style={{ maxHeight: '60px' }} /> : <ImageIcon size={48} style={{ opacity: 0.1 }} />}
+                          {settings.assets?.logo ? <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}${settings.assets.logo}`} alt="Logo" style={{ maxHeight: '60px' }} /> : <ImageIcon size={48} style={{ opacity: 0.1 }} />}
                         </div>
                         <input 
                           type="file" 
@@ -293,7 +302,7 @@ const Admin = ({ settings, setSettings }) => {
                     <div style={{ padding: '2.5rem', border: '2px dashed var(--border-md)', borderRadius: '20px', textAlign: 'center' }}>
                         <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem' }}>Ambience Audio</h3>
                         <div style={{ height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                          {settings.audio ? <audio controls src={`http://localhost:5001${settings.audio}`} style={{ width: '100%' }} /> : <ImageIcon size={48} style={{ opacity: 0.1, transform: 'rotate(90deg)' }} />}
+                          {settings.assets?.audio ? <audio controls src={`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}${settings.assets.audio}`} style={{ width: '100%' }} /> : <ImageIcon size={48} style={{ opacity: 0.1, transform: 'rotate(90deg)' }} />}
                         </div>
                         <input 
                           type="file" 
